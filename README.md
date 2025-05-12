@@ -54,13 +54,16 @@ Whether you're a test candidate or simply interested in British history, this ti
 
 ## 🤝 Contributing
 
-Contributions to improve the timeline are welcome! Feel free to:
+Contributions are welcome and appreciated! Here's how you can help:
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-addition`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-addition`)
-5. Open a Pull Request
+- **Report bugs or issues** by opening a GitHub issue
+- **Suggest new features or historical events** to add to the timeline
+- **Improve documentation** for clarity and completeness
+- **Submit pull requests** with enhancements or fixes
+
+For major changes, please open an issue first to discuss what you'd like to change.
+
+No contribution is too small - even fixing a typo helps!
 
 ## 📄 License
 
