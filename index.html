@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life in the UK Timeline</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .timeline-container {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .timeline-container::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background-color: #3b82f6;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+            border-radius: 3px;
+        }
+        
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            width: 50%;
+            box-sizing: border-box;
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border: 4px solid #3b82f6;
+            border-radius: 50%;
+            top: 15px;
+            z-index: 1;
+        }
+        
+        .left {
+            left: 0;
+        }
+        
+        .right {
+            left: 50%;
+        }
+        
+        .left::before {
+            content: " ";
+            height: 0;
+            position: absolute;
+            top: 22px;
+            width: 0;
+            z-index: 1;
+            right: 30px;
+            border: medium solid rgba(59, 130, 246, 0.2);
+            border-width: 10px 0 10px 10px;
+            border-color: transparent transparent transparent rgba(59, 130, 246, 0.2);
+        }
+        
+        .right::before {
+            content: " ";
+            height: 0;
+            position: absolute;
+            top: 22px;
+            width: 0;
+            z-index: 1;
+            left: 30px;
+            border: medium solid rgba(59, 130, 246, 0.2);
+            border-width: 10px 10px 10px 0;
+            border-color: transparent rgba(59, 130, 246, 0.2) transparent transparent;
+        }
+        
+        .right::after {
+            left: -10px;
+        }
+
+        .left::after{
+            top: 20px;
+            right: -10px;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .timeline-container::after {
+                left: 31px;
+            }
+            
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+            
+            .timeline-item::before {
+                left: 60px;
+                border: medium solid rgba(59, 130, 246, 0.2);
+                border-width: 10px 10px 10px 0;
+                border-color: transparent rgba(59, 130, 246, 0.2) transparent transparent;
+            }
+            
+            .left::after, .right::after {
+                left: 21px;
+            }
+            
+            .right {
+                left: 0%;
+            }
+        }
+        
+        .era-title {
+            position: relative;
+            z-index: 2;
+            background-color: #3b82f6;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-align: center;
+            margin: 20px auto;
+            width: fit-content;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .highlight {
+            background-color: #fef3c7;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .search-container {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .jump-to-era {
+            position: sticky;
+            top: 70px;
+            z-index: 90;
+            background-color: white;
+            padding: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-blue-600 mb-4">Life in the UK Timeline</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">A visual journey through British history for the Life in the UK test</p>
+        </header>
+        
+        <div class="search-container">
+            <div class="max-w-md mx-auto relative">
+                <input type="text" id="searchInput" placeholder="Search events..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+            </div>
+        </div>
+        
+        <div class="jump-to-era">
+            <div class="flex flex-wrap justify-center gap-2">
+                <button onclick="scrollToEra('prehistoric')" class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition">Prehistoric</button>
+                <button onclick="scrollToEra('romans')" class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition">Romans</button>
+                <button onclick="scrollToEra('anglo-saxons')" class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition">Anglo-Saxons</button>
+                <button onclick="scrollToEra('middle-ages')" class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition">Middle Ages</button>
+                <button onclick="scrollToEra('tudors')" class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition">Tudors</button>
+                <button onclick="scrollToEra('stuarts')" class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition">Stuarts</button>
+                <button onclick="scrollToEra('empire')" class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition">Empire</button>
+                <button onclick="scrollToEra('modern')" class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition">Modern</button>
+            </div>
+        </div>
+        
+        <div class="timeline-container mt-8">
+            <!-- Prehistoric Era -->
+            <div id="prehistoric" class="era-title">Prehistoric Britain</div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">50 million years ago</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Formation of Giant's Causeway</h3>
+                    <p class="text-gray-600">Located on the <span class="highlight">north-east</span> coast of <span class="highlight">Northern Ireland</span>, the Giant's Causeway is a land formation of columns made from <span class="highlight">volcanic lava</span>.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">8,000 BC</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Britain Separates from Continent</h3>
+                    <p class="text-gray-600">Britain became permanently separated from the continent by the Channel (<span class="highlight">10,000 years ago</span>).</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">4,000 BC</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">First Farmers Arrive</h3>
+                    <p class="text-gray-600">The first farmers arrived in Britain (about <span class="highlight">6,000 years ago</span>). The ancestors of these first farmers probably came from <span class="highlight">south-east Europe</span>.</p>
+                </div>
+            </div>
+            
+            <!-- Bronze Age -->
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">2,000 BC</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Bronze Age Settlements</h3>
+                    <p class="text-gray-600">People lived in roundhouses, made metal tools, and buried their dead in tombs called round barrows.</p>
+                </div>
+            </div>
+            
+            <!-- Iron Age -->
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">700 BC</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Iron Age Developments</h3>
+                    <p class="text-gray-600">First coins were minted. <span class="highlight">Maiden Castle</span>, an important Iron Age hill fort, was built.</p>
+                </div>
+            </div>
+            
+            <!-- Roman Era -->
+            <div id="romans" class="era-title">Roman Britain (43 AD - 410 AD)</div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">55 BC</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Julius Caesar's Attempted Invasion</h3>
+                    <p class="text-gray-600">Roman <span class="highlight">Julius Caesar</span> tried (and failed) to invade Britain.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">43 AD</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Roman Conquest of Britain</h3>
+                    <p class="text-gray-600">Roman Emperor <span class="highlight">Claudius</span> successfully invaded (most of) Britain.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">60 AD</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Boudicca's Revolt</h3>
+                    <p class="text-gray-600"><span class="highlight">Boudicca</span>, queen of the Iceni tribe, led a major uprising against the Romans.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">122 AD</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Hadrian's Wall Built</h3>
+                    <p class="text-gray-600">Emperor <span class="highlight">Hadrian</span> built <span class="highlight">Hadrian's Wall</span> to mark the northern boundary of the Roman Empire in Britain.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">3rd-4th centuries</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">First Christian Communities</h3>
+                    <p class="text-gray-600">The first Christian communities began to appear in Britain.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">410 AD</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Romans Leave Britain</h3>
+                    <p class="text-gray-600">The Roman army left Britain to defend other parts of the Roman Empire and never returned.</p>
+                </div>
+            </div>
+            
+            <!-- Anglo-Saxon Era -->
+            <div id="anglo-saxons" class="era-title">Anglo-Saxon Britain (410 AD - 1066 AD)</div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">by 600 AD</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Anglo-Saxon Kingdoms Established</h3>
+                    <p class="text-gray-600">Anglo-Saxon kingdoms were established in Britain (mainly in England).</p>
+                </div>
+            </div>
+            
+            <!-- Viking Era -->
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">789 AD</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Viking Invasions Begin</h3>
+                    <p class="text-gray-600">The Vikings came from <span class="highlight">Denmark and Norway</span>. They first visited Britain to raid <span class="highlight">coastal towns</span> and take away <span class="highlight">goods</span> and <span class="highlight">slaves</span>. Then, they began to stay and form their own communities in the east of <span class="highlight">England</span> and <span class="highlight">Scotland</span>.</p>
+                </div>
+            </div>
+            
+            <!-- Middle Ages -->
+            <div id="middle-ages" class="era-title">Middle Ages (1066 - 1485)</div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1066</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Norman Conquest</h3>
+                    <p class="text-gray-600">The Norman Conquest led by <span class="highlight">William the Conqueror</span>, the Duke of Normandy, defeated <span class="highlight">Harold Godwinson</span>, the Saxon King of England, at the <span class="highlight">Battle of Hastings</span> (last time England was successfully invaded). Harold was killed in the battle.</p>
+                    <ul class="mt-2 pl-5 list-disc text-gray-600">
+                        <li>William became king of England</li>
+                        <li>Start of the Westminster Abbey as the coronation church</li>
+                        <li>The <span class="highlight">Tower of London</span> was first built by William the Conqueror</li>
+                        <li>Start of the "middle ages"</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1215</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Magna Carta Signed</h3>
+                    <p class="text-gray-600"><span class="highlight">Magna Carta</span> (which means <span class="highlight">the Great Charter</span>) signed by King John (forced by noblemen).</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1284</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Statute of Rhuddlan</h3>
+                    <p class="text-gray-600">King Edward I introduced the Statute of <span class="highlight">Rhuddlan</span>, which annexed <span class="highlight">Wales</span> to the Crown of England. Huge castles, including <span class="highlight">Conwy</span> and <span class="highlight">Caernarfon</span>, were built to maintain this power.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1314</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Battle of Bannockburn</h3>
+                    <p class="text-gray-600">The <span class="highlight">Scottish</span>, led by <span class="highlight">Robert the Bruce</span>, defeated the English at the battle of <span class="highlight">Bannockburn</span>. Scotland remained unconquered by the English.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1348</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Black Death</h3>
+                    <p class="text-gray-600">Black Death (a form of plague) comes to Britain, killing a significant portion of the population.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1415</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Battle of Agincourt</h3>
+                    <p class="text-gray-600">One of the most famous battles of the Hundred Years War. King <span class="highlight">Henry V's</span> vastly outnumbered English army defeated the French.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1455-1485</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Wars of the Roses</h3>
+                    <p class="text-gray-600">A civil war between the supporters of House of Lancaster (<span class="highlight">red rose</span>) and the House of York (<span class="highlight">white rose</span>), to decide who should be king of England.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1485</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Battle of Bosworth Field</h3>
+                    <p class="text-gray-600">The Wars of the Roses ended with the Battle of <span class="highlight">Bosworth Field</span>.</p>
+                    <ul class="mt-2 pl-5 list-disc text-gray-600">
+                        <li><span class="highlight">Henry Tudor</span>, leader of the House of Lancaster, became King Henry VII after defeating King Richard III (killed in battle) of the House of York</li>
+                        <li>Henry married King Richard's niece, <span class="highlight">Elizabeth</span> of York, uniting the two families</li>
+                        <li>Henry was the first king of the House of Tudor</li>
+                        <li>Symbol of the House of Tudor was a red rose with a white rose inside</li>
+                        <li>End of the "middle ages"</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Tudors -->
+            <div id="tudors" class="era-title">Tudors (1485 - 1603)</div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1509</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Henry VIII Becomes King</h3>
+                    <p class="text-gray-600">King <span class="highlight">Henry VIII</span> became king of England. He had 6 wives.</p>
+                    <ul class="mt-2 pl-5 list-disc text-gray-600">
+                        <li>Wales became formally united with England by the Act for the Government of Wales</li>
+                        <li>Ditched Roman Catholic and established the <span class="highlight">Church of England</span></li>
+                        <li>The King had power to appoint bishops and order people how to worship</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1547</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Death of Henry VIII</h3>
+                    <p class="text-gray-600">Henry VIII died. He was succeeded by his son King <span class="highlight">Edward VI</span>.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1560</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Protestant Reformation in Scotland</h3>
+                    <p class="text-gray-600">The predominantly Protestant Scottish Parliament abolished the authority of the Pope in Scotland and Roman Catholic religious services became illegal. A Protestant <span class="highlight">Church of Scotland</span> with an elected leadership was established.</p>
+                    <p class="text-gray-600 mt-2"><span class="highlight">Mary Queen of Scots</span> (Catholic) flees to England → imprisoned for 20 years then executed.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1588</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Defeat of Spanish Armada</h3>
+                    <p class="text-gray-600">English Sir <span class="highlight">Francis Drake</span> defeated the <span class="highlight">Spanish Armada</span> (a large fleet of invading ships), which had been sent by Spain to conquer England and <span class="highlight">restore Catholicism</span>.</p>
+                    <p class="text-gray-600 mt-2">Queen <span class="highlight">Elizabeth I</span> became one of the most popular monarchs in English history after this.</p>
+                </div>
+            </div>
+            
+            <!-- Stuarts -->
+            <div id="stuarts" class="era-title">Stuarts (1603 - 1714)</div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1603</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Union of Crowns</h3>
+                    <p class="text-gray-600">Elizabeth I dies childless, <span class="highlight">James VI of Scotland</span> becomes <span class="highlight">James I of England</span>, also became King of England, Wales and Ireland.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1605</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Gunpowder Plot</h3>
+                    <p class="text-gray-600">A group of <span class="highlight">Catholics</span> led by <span class="highlight">Guy Fawkes</span> failed in their plan to kill the <span class="highlight">Protestant</span> king with a bomb in the Houses of Parliament. This is the origin of the <span class="highlight">Bonfire Night</span> celebration on the <span class="highlight">5th November</span>.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1606</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">First Union Flag</h3>
+                    <p class="text-gray-600">First union flag created. The Welsh <span class="highlight">dragon</span> does not appear on the Union Flag because, when the first Union Flag was created from the flags of Scotland and England, the Principality of Wales was already united with England.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1642-1646</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">English Civil War</h3>
+                    <p class="text-gray-600">A civil war between the king (<span class="highlight">Charles I</span>) (the <span class="highlight">Cavaliers</span>) and Parliament (<span class="highlight">Cromwell</span>) (the <span class="highlight">Roundheads</span>).</p>
+                    <p class="text-gray-600 mt-2">1649: King Charles I executed by beheading, <span class="highlight">Oliver Cromwell</span> becomes "Lord Protector", leader of republic.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1660</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Restoration of Monarchy</h3>
+                    <p class="text-gray-600">"The Restoration": Parliament invited King <span class="highlight">Charles II</span> to come back from exile in the Netherlands and instated as king.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1666</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Great Fire of London</h3>
+                    <p class="text-gray-600">A great fire destroyed much of London, including many churches and St Paul's Cathedral. London was rebuilt with a new St Paul's, designed by <span class="highlight">Sir Christopher Wren</span>. <span class="highlight">Samuel Pepys</span> wrote about these events in his famous diary.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1688</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Glorious Revolution</h3>
+                    <p class="text-gray-600">Important Protestants in England asked <span class="highlight">William of Orange</span> to invade England and proclaim himself King <span class="highlight">William III</span>. King James II fled and William became King. This is the <span class="highlight">Glorious Revolution</span>.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1689</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Bill of Rights</h3>
+                    <p class="text-gray-600">The <span class="highlight">Bill of Rights</span> confirmed the rights of Parliament and the limits of the king's power. Parliament took control of who could be monarch and declared that the king or queen must be a Protestant. This marks the beginning of <span class="highlight">constitutional monarchy</span>.</p>
+                </div>
+            </div>
+            
+            <!-- Empire and Industrial Revolution -->
+            <div id="empire" class="era-title">British Empire and Industrial Revolution (18th-19th Century)</div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1707</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Act of Union</h3>
+                    <p class="text-gray-600">The <span class="highlight">Act of Union</span>, known as the Treaty of Union in Scotland, was agreed, creating the <span class="highlight">Kingdom of Great Britain</span>.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1721</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">First Prime Minister</h3>
+                    <p class="text-gray-600"><span class="highlight">Sir Robert Walpole</span> became the first Prime Minister in British history.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1776</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">American Independence</h3>
+                    <p class="text-gray-600">13 American states declare their independence. Britain recognised the American colonies' independence in 1783.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1801</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Act of Union with Ireland</h3>
+                    <p class="text-gray-600">Ireland became unified with England, Scotland and Wales after the <span class="highlight">Act of Union of 1800</span>.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1805</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Battle of Trafalgar</h3>
+                    <p class="text-gray-600">Britain wins Battle of Trafalgar against combined French and Spanish fleets (<span class="highlight">Nelson</span> dies).</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1807</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Abolition of Slave Trade</h3>
+                    <p class="text-gray-600">It became illegal to trade slaves in British ships or from British ports.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1815</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Battle of Waterloo</h3>
+                    <p class="text-gray-600">The French Wars ended with the defeat of the Emperor <span class="highlight">Napoleon</span> by the Duke of <span class="highlight">Wellington</span> at the Battle of <span class="highlight">Waterloo</span>. Wellington was known as the <span class="highlight">Iron Duke</span> and later became Prime Minister.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1833</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Emancipation Act</h3>
+                    <p class="text-gray-600">The <span class="highlight">Emancipation Act</span> abolished <span class="highlight">slavery</span> throughout the British Empire. The Royal Navy stopped slave ships from other countries, freed the slaves and punished the slave traders.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1837</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Queen Victoria's Reign Begins</h3>
+                    <p class="text-gray-600">Queen <span class="highlight">Victoria</span> became queen of the UK at the age of <span class="highlight">18</span>.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1851</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Great Exhibition</h3>
+                    <p class="text-gray-600">The <span class="highlight">Great Exhibition</span> opened in Hyde Park in the <span class="highlight">Crystal Palace</span>, showcasing British industrial achievements.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1860</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Florence Nightingale</h3>
+                    <p class="text-gray-600"><span class="highlight">Florence Nightingale</span> established the Nightingale Training School for nurses. She is regarded as the founder of modern nursing.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1901</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">End of Victorian Era</h3>
+                    <p class="text-gray-600">End of Queen Victoria's reign, almost 64 years.</p>
+                </div>
+            </div>
+            
+            <!-- Modern Era -->
+            <div id="modern" class="era-title">Modern Britain (20th Century - Present)</div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1914-1918</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">World War I</h3>
+                    <p class="text-gray-600">The First World War (1914-1918, <span class="highlight">4 years</span>).</p>
+                    <p class="text-gray-600 mt-2">1916, July: The British attack of the <span class="highlight">Somme</span>, resulted in about <span class="highlight">60,000</span> British casualties on the first day alone.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1918</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">End of WWI and Women's Suffrage</h3>
+                    <p class="text-gray-600">The First World War ended at 11.00 am on <span class="highlight">11th November</span> with victory for Britain and its allies.</p>
+                    <p class="text-gray-600 mt-2">Women over the age of 30 can vote and stand for Parliament.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1928</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Equal Voting Rights</h3>
+                    <p class="text-gray-600">Women were given the right to vote at the age of 21, the same as men.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1939-1945</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">World War II</h3>
+                    <p class="text-gray-600">Adolf Hitler invaded Poland. Britain and France declared war on Germany.</p>
+                    <p class="text-gray-600 mt-2">1940: <span class="highlight">Winston Churchill</span> became Prime Minister.</p>
+                    <p class="text-gray-600">The British won the crucial aerial battle against the Germans, called "the <span class="highlight">Battle of Britain</span>".</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1945</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Post-War Britain</h3>
+                    <p class="text-gray-600">The Allies comprehensively defeated Germany.</p>
+                    <p class="text-gray-600 mt-2">Winston Churchill lost the General Election. The British people elected a Labour government. <span class="highlight">Clement Attlee</span> became Prime Minister.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1948</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">NHS Established</h3>
+                    <p class="text-gray-600"><span class="highlight">Aneurin Bevan</span>, the Minister for Health, led the establishment of the <span class="highlight">National Health Service (NHS)</span>.</p>
+                    <p class="text-gray-600 mt-2">People from the West Indies were invited to come to Britain and work.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1952</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Queen Elizabeth II's Reign Begins</h3>
+                    <p class="text-gray-600">Start of Queen <span class="highlight">Elizabeth II's</span> reign.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1973</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">UK Joins EEC</h3>
+                    <p class="text-gray-600">The UK joined the <span class="highlight">European Economic Community</span> (EEC).</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1979</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Margaret Thatcher</h3>
+                    <p class="text-gray-600"><span class="highlight">Margaret Thatcher</span> became the first woman Prime Minister of the UK.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1997</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Labour Government</h3>
+                    <p class="text-gray-600">The Labour Party led by <span class="highlight">Tony Blair</span> was elected.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item right">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">1999</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Devolution</h3>
+                    <p class="text-gray-600">Creation of the <span class="highlight">Welsh Assembly</span> and the <span class="highlight">Scottish Parliament</span>.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item left">
+                <div class="bg-white p-6 rounded-lg shadow-md relative">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">2020</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Brexit</h3>
+                    <p class="text-gray-600">The UK formally left the <span class="highlight">European Union</span> on <span class="highlight">31 January</span>.</p>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="mt-16 text-center text-gray-500 text-sm">
+            <p>© <span id="currentYear"></span> Life in the UK Timeline. Built by 
+                <a href="https://github.com/cristianexer" class="text-blue-500 hover:underline inline-flex items-center space-x-1">
+                    <i class="fab fa-github"></i>
+                    <span>cristianexer</span>
+                </a>. Connect on 
+                <a href="https://linkedin.com/in/cristianexer" class="text-blue-500 hover:underline inline-flex items-center space-x-1">
+                    <i class="fab fa-linkedin"></i>
+                    <span>LinkedIn</span>
+                </a>.
+            </p>
+        </footer>
+        <script>
+            document.getElementById("currentYear").textContent = new Date().getFullYear();
+        </script>
+    </div>
+
+    <script>
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            
+            timelineItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        });
+        
+        // Jump to era functionality
+        function scrollToEra(eraId) {
+            const element = document.getElementById(eraId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    </script>
+</body>
+</html>
