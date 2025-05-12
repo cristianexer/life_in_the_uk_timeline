@@ -7,6 +7,8 @@
 
 A visually appealing, interactive timeline of British history designed specifically for those preparing for the Life in the UK test. Study the key historical events in an engaging format!
 
+[![Live Demo](https://img.shields.io/badge/Website-View_Timeline-2ea44f?style=for-the-badge)](https://cristianexer.github.io/life_in_the_uk_timeline/)
+
 ## 📜 About
 
 The **Life in the UK Timeline** is a web-based tool that presents British history chronologically in an easy-to-navigate format. From prehistoric Britain to modern times, this timeline covers all the essential historical events that might appear on the Life in the UK test.
